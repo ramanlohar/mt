@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Tracker</title>
+    <script src="https://kit.fontawesome.com/3df9dd8881.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden; /* Add this line to remove horizontal scrollbar */
+        }
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header img {
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        section {
+            padding: 10px 0 0 0;
+        }
+
+        ul li{
+            background-color: rgb(255, 255, 255);
+            padding: 15px;
+            border-radius: 0px;
+            font-size: 18px;
+            padding-left: 20px;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 20px;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        .contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .contact-list-item {
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .contact-list-item:hover {
+            text-decoration: underline;
+        }
+        footer {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            padding: 5px;
+            background-color: #ffffff;
+        }
+        .fa-user{
+            background-color: #3498db;
+            padding: 7px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+        #logo{
+            height: 50px;
+            margin: -5px;
+        }
+        section{
+            margin-bottom: 70px;
+        }
+        footer{
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>Money Tracker</h2>
+    <img id="logo" src="path/to/your/logo.png" alt="Logo" onclick="openAccountInfoPage()">
+</header>
+
+<section>
+    <ul id="contactList" class="contact-list"></ul>
+    
+    <!-- <button onclick="openAddContactPage()">Add Contact</button> -->
+</section>
+
+<footer>
+    <button onclick="openAddContactPage()">A C</button>
+</footer>
+
+<script>
+    function openAccountInfoPage() {
+        window.location.href = 'accountinfo.html';
+    }
+
+    function openAddContactPage() {
+        var contactId = generateUniqueId();
+        localStorage.setItem('activeContact', contactId);
+        window.location.href = 'addcontact.html';
+    }
+
+    function generateUniqueId() {
+        var min = 1;
+        var max = 99999;
+        var randomId = 'MT' + ('00000' + Math.floor(Math.random() * (max - min + 1) + min)).slice(-5);
+        return randomId;
+    }
+
+    // Load contacts on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        loadContacts();
+    });
+
+    function loadContacts() {
+        var contactList = document.getElementById('contactList');
+        contactList.innerHTML = ''; // Clear existing list
+
+        // Iterate through local storage and add contacts to the list
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key.startsWith('MT')) {
+                var contactInfo = JSON.parse(localStorage.getItem(key));
+                var listItem = document.createElement('li');
+                listItem.className = 'contact-list-item';
+                listItem.textContent = contactInfo.name;
+                listItem.innerHTML = `<i class="fa-solid fa-user"></i> ${contactInfo.name}`
+                listItem.setAttribute('data-contact-id', key); // Add data-contact-id attribute
+                listItem.onclick = function () {
+                    setActiveClickedContact(this.getAttribute('data-contact-id'));
+                    window.location.href = "contactinfo.html"
+                };
+                contactList.appendChild(listItem);
+            }
+        }
+    }
+
+    function setActiveClickedContact(contactId) {
+        localStorage.setItem('activeClickedContactId', contactId);
+        // You can redirect to another page or perform additional actions here
+        console.log('Active Clicked Contact ID:', contactId);
+    }
+    const logoURL = localStorage.getItem('logoURL');
+    document.getElementById('logo').src = logoURL;
+</script>
+
+</body>
+</html>

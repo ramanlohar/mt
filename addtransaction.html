@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Transaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Add Transaction</h1>
+</header>
+
+<section>
+    <form onsubmit="saveTransaction(event)">
+        <label for="transactionType">Transaction Type:</label>
+        <select id="transactionType" name="transactionType" required>
+            <option value="send">Send</option>
+            <option value="receive">Receive</option>
+        </select>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+
+        <label for="amount">Amount (INR):</label>
+        <input type="number" id="amount" name="amount" required>
+
+        <label for="transactionDate">Transaction Date:</label>
+        <input type="date" id="transactionDate" name="transactionDate" value="" required>
+
+        <button type="submit">Save</button>
+    </form>
+</section>
+
+<script>
+    function saveTransaction(event) {
+        event.preventDefault();
+
+        var contactId = localStorage.getItem('activeClickedContactId');
+        var transactionType = document.getElementById('transactionType').value;
+        var description = document.getElementById('description').value;
+        var amount = document.getElementById('amount').value;
+        var transactionDate = document.getElementById('transactionDate').value;
+
+        // Generate a unique ID based on current date and time
+        var now = new Date();
+        var uniqueId = formatDate(now);
+
+        // Get existing transactions or initialize an empty array
+        var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
+
+        // Add the new transaction to the array with the unique ID
+        transactions.push({
+            ID: uniqueId,
+            type: transactionType,
+            description: description,
+            amount: amount,
+            date: transactionDate
+        });
+
+        // Save the updated transactions array to local storage
+        localStorage.setItem('_transactions' + contactId, JSON.stringify(transactions));
+
+        // Redirect back to contactinfo.html
+        window.location.href = 'contactinfo.html';
+    }
+
+    function formatDate(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        var seconds = String(date.getSeconds()).padStart(2, '0');
+        var milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+        return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
+    }
+</script>
+
+</body>
+</html>

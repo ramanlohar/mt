@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information</title>
+    <script src="https://kit.fontawesome.com/3df9dd8881.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        section {
+            padding: 15px;
+            text-align: center;
+        }
+
+        #logo {
+            height: 150px;
+            width: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 20px auto;
+        }
+
+        #logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #2ecc71;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .file-input-label:hover {
+            background-color: #27ae60;
+        }
+        #username{
+            text-align: center;
+            font-size: 20px;
+            border: none;
+            background-color: transparent;
+            outline: none;
+        }
+        #back_btn{
+            background-color: transparent;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            outline: none;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div><button id="back_btn"><i class="fa-solid fa-arrow-left"></i></button></div>
+        <h1>Account Information</h1>
+    </header>
+
+    <section>
+        <h2>User Information</h2>
+        <!-- <label for="username">Username:</label> -->
+        <input type="text" id="username" name="username" placeholder="Enter your username">
+        
+        <div id="logo">
+            <img id="logoImage" src="" alt="Logo">
+        </div>
+
+    </section>
+    <section>
+        <h2>Net Amount</h2>
+        <p>Total Money Received: <span id="totalReceived"></span> INR</p>
+        <p>Total Money Sent: <span id="totalSent"></span> INR</p>
+        <p>Net Amount: <span id="netAmount"></span> INR</p>
+    </section>
+
+    <section>
+
+        <!-- Input for logo with file type -->
+        <input type="file" id="logoInput" accept=".jpg, .jpeg, .png, .gif">
+        <label for="logoInput" class="file-input-label">Change Logo</label>
+        
+        <button onclick="saveUserInfo()">Update Info</button>
+        
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Retrieve the contact ID from local storage
+            var contactId = localStorage.getItem('activeClickedContactId');
+
+            // Get the transactions associated with the contact ID
+            var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
+
+            // Calculate total sent, total received, and net balance
+            var totalSent = 0;
+            var totalReceived = 0;
+
+            for (var i = 0; i < transactions.length; i++) {
+                var transaction = transactions[i];
+
+                if (transaction.type === 'send') {
+                    totalSent += parseFloat(transaction.amount);
+                } else if (transaction.type === 'receive') {
+                    totalReceived += parseFloat(transaction.amount);
+                }
+            }
+
+            // Calculate net balance
+            var netBalance = totalReceived - totalSent;
+
+            // Display the values on the page
+            document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
+            document.getElementById('totalSent').textContent = totalSent.toFixed(2);
+            document.getElementById('netAmount').textContent = netBalance.toFixed(2);
+
+            // Load user information from local storage
+            var storedUsername = localStorage.getItem('username');
+            var storedLogoURL = localStorage.getItem('logoURL');
+
+            // Display user information on the page
+            document.getElementById('username').value = storedUsername || '';
+            document.getElementById('logoImage').src = storedLogoURL || '';
+        });
+
+        function saveUserInfo() {
+            // Get user input values
+            var username = document.getElementById('username').value;
+            var logoInput = document.getElementById('logoInput');
+            var logoURL = document.getElementById('logoImage').src;
+
+            // Save user information to local storage
+            localStorage.setItem('username', username);
+            localStorage.setItem('logoURL', logoURL);
+
+            // Display updated user information on the page
+            document.getElementById('username').value = username;
+            document.getElementById('logoImage').src = logoURL;
+        }
+
+        // Event listener for logo input change
+        document.getElementById('logoInput').addEventListener('change', function (event) {
+            var fileInput = event.target;
+            var logoImage = document.getElementById('logoImage');
+
+            // Validate file format
+            var allowedFormats = ['jpg', 'jpeg', 'png', 'gif'];
+            var fileName = fileInput.value.toLowerCase();
+            var isValidFormat = allowedFormats.some(format => fileName.endsWith('.' + format));
+
+            if (isValidFormat) {
+                // Read the selected file and set it as the source for the logo image
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    logoImage.src = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                alert('Invalid file format. Please choose a file with formats: jpg, jpeg, png, gif.');
+                fileInput.value = ''; // Clear the file input
+            }
+        });
+        document.getElementById("back_btn").addEventListener("click",()=>{
+            window.location.href = "index.html"
+        })
+    </script>
+
+</body>
+
+</html>
