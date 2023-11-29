@@ -87,50 +87,54 @@
 
     <section>
         <h2>User Information</h2>
-        <!-- <label for="username">Username:</label> -->
         <input type="text" id="username" name="username" placeholder="Enter your username">
-        
         <div id="logo">
             <img id="logoImage" src="" alt="Logo">
         </div>
-
     </section>
+
     <section>
-        <h2>Net Amount</h2>
+        <h2>Total Amount Information</h2>
         <p>Total Money Received: <span id="totalReceived"></span> INR</p>
         <p>Total Money Sent: <span id="totalSent"></span> INR</p>
         <p>Net Amount: <span id="netAmount"></span> INR</p>
     </section>
 
     <section>
-
-        <!-- Input for logo with file type -->
         <input type="file" id="logoInput" accept=".jpg, .jpeg, .png, .gif">
         <label for="logoInput" class="file-input-label">Change Logo</label>
-        
         <button onclick="saveUserInfo()">Update Info</button>
-        
     </section>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Retrieve the contact ID from local storage
-            var contactId = localStorage.getItem('activeClickedContactId');
+            // Load user information from local storage
+            var storedUsername = localStorage.getItem('username');
+            var storedLogoURL = localStorage.getItem('logoURL');
 
-            // Get the transactions associated with the contact ID
-            var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
+            // Display user information on the page
+            document.getElementById('username').value = storedUsername || '';
+            document.getElementById('logoImage').src = storedLogoURL || '';
 
-            // Calculate total sent, total received, and net balance
-            var totalSent = 0;
+            // Calculate total received and sent amounts across all contacts
             var totalReceived = 0;
+            var totalSent = 0;
 
-            for (var i = 0; i < transactions.length; i++) {
-                var transaction = transactions[i];
+            for (var i = 0; i < localStorage.length; i++) {
+                var key = localStorage.key(i);
 
-                if (transaction.type === 'send') {
-                    totalSent += parseFloat(transaction.amount);
-                } else if (transaction.type === 'receive') {
-                    totalReceived += parseFloat(transaction.amount);
+                if (key.startsWith('_transactions')) {
+                    var transactions = JSON.parse(localStorage.getItem(key)) || [];
+
+                    for (var j = 0; j < transactions.length; j++) {
+                        var transaction = transactions[j];
+
+                        if (transaction.type === 'send') {
+                            totalSent += parseFloat(transaction.amount);
+                        } else if (transaction.type === 'receive') {
+                            totalReceived += parseFloat(transaction.amount);
+                        }
+                    }
                 }
             }
 
@@ -141,14 +145,6 @@
             document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
             document.getElementById('totalSent').textContent = totalSent.toFixed(2);
             document.getElementById('netAmount').textContent = netBalance.toFixed(2);
-
-            // Load user information from local storage
-            var storedUsername = localStorage.getItem('username');
-            var storedLogoURL = localStorage.getItem('logoURL');
-
-            // Display user information on the page
-            document.getElementById('username').value = storedUsername || '';
-            document.getElementById('logoImage').src = storedLogoURL || '';
         });
 
         function saveUserInfo() {
@@ -188,6 +184,7 @@
                 fileInput.value = ''; // Clear the file input
             }
         });
+        
         document.getElementById("back_btn").addEventListener("click",()=>{
             window.location.href = "index.html"
         })
