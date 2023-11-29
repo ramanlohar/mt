@@ -125,7 +125,13 @@
 </header>
 
 <section>
-    <ul id="contactList" class="contact-list"></ul>
+    <ul id="contactList" class="contact-list">
+
+        <li class="contact-item" onclick="goToIncSpendPage()">
+                <strong>My Inc & Expend</strong>
+        </li>
+        
+    </ul>
     
     <!-- <button onclick="openAddContactPage()">Add Contact</button> -->
 </section>
@@ -187,6 +193,10 @@
     }
     const logoURL = localStorage.getItem('logoURL');
     document.getElementById('logo').src = logoURL;
+
+            function goToIncSpendPage() {
+            window.location.href = 'incspd.html';
+            }
 </script>
 
 </body>
