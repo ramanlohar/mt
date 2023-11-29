@@ -59,14 +59,16 @@
         .file-input-label:hover {
             background-color: #27ae60;
         }
-        #username{
+
+        #username {
             text-align: center;
             font-size: 20px;
             border: none;
             background-color: transparent;
             outline: none;
         }
-        #back_btn{
+
+        #back_btn {
             background-color: transparent;
             color: white;
             font-size: 20px;
@@ -108,87 +110,85 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-    // Load user information from local storage
-    var storedUsername = localStorage.getItem('username');
-    var storedLogoURL = localStorage.getItem('logoURL');
+            // Load user information from local storage
+            var storedUsername = localStorage.getItem('username');
+            var storedLogoURL = localStorage.getItem('logoURL');
 
-    // Display user information on the page
-    document.getElementById('username').value = storedUsername || '';
-    document.getElementById('logoImage').src = storedLogoURL || '';
+            // Display user information on the page
+            document.getElementById('username').value = storedUsername || '';
+            document.getElementById('logoImage').src = storedLogoURL || '';
 
-    // Get the active contact ID
-    var contactId = localStorage.getItem('activeClickedContactId');
+            // Get the active contact ID
+            var contactId = localStorage.getItem('activeClickedContactId');
 
-    // Get the transactions associated with the contact ID
-    var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
+            // Get the transactions associated with the contact ID
+            var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
 
-    // Calculate total received and sent amounts for the active contact
-    var totalReceived = 0;
-    var totalSent = 0;
+            // Calculate total received and sent amounts for the active contact
+            var totalReceived = 0;
+            var totalSent = 0;
 
-    for (var i = 0; i < transactions.length; i++) {
-        var transaction = transactions[i];
+            for (var i = 0; i < transactions.length; i++) {
+                var transaction = transactions[i];
 
-        if (transaction.type === 'send') {
-            totalSent += parseFloat(transaction.amount);
-        } else if (transaction.type === 'receive') {
-            totalReceived += parseFloat(transaction.amount);
+                if (transaction.type === 'send') {
+                    totalSent += parseFloat(transaction.amount);
+                } else if (transaction.type === 'receive') {
+                    totalReceived += parseFloat(transaction.amount);
+                }
+            }
+
+            // Calculate net balance, including income and spend
+            var netBalance = (totalReceived - totalSent).toFixed(2);
+
+            // Display the values on the page
+            document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
+            document.getElementById('totalSent').textContent = totalSent.toFixed(2);
+            document.getElementById('netAmount').textContent = netBalance;
+        });
+
+        // Other existing functions...
+
+        function saveUserInfo() {
+            // Get user input values
+            var username = document.getElementById('username').value;
+            var logoInput = document.getElementById('logoInput');
+            var logoURL = document.getElementById('logoImage').src;
+
+            // Save user information to local storage
+            localStorage.setItem('username', username);
+            localStorage.setItem('logoURL', logoURL);
+
+            // Display updated user information on the page
+            document.getElementById('username').value = username;
+            document.getElementById('logoImage').src = logoURL;
         }
-    }
 
-    // Calculate net balance, including income and spend
-    var netBalance = (totalReceived - totalSent).toFixed(2);
+        // Event listener for logo input change
+        document.getElementById('logoInput').addEventListener('change', function (event) {
+            var fileInput = event.target;
+            var logoImage = document.getElementById('logoImage');
 
-    // Display the values on the page
-    document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
-    document.getElementById('totalSent').textContent = totalSent.toFixed(2);
-    document.getElementById('netAmount').textContent = netBalance;
-});
+            // Validate file format
+            var allowedFormats = ['jpg', 'jpeg', 'png', 'gif'];
+            var fileName = fileInput.value.toLowerCase();
+            var isValidFormat = allowedFormats.some(format => fileName.endsWith('.' + format));
 
-// Other existing functions...
+            if (isValidFormat) {
+                // Read the selected file and set it as the source for the logo image
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    logoImage.src = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                alert('Invalid file format. Please choose a file with formats: jpg, jpeg, png, gif.');
+                fileInput.value = ''; // Clear the file input
+            }
+        });
 
-function saveUserInfo() {
-    // Get user input values
-    var username = document.getElementById('username').value;
-    var logoInput = document.getElementById('logoInput');
-    var logoURL = document.getElementById('logoImage').src;
-
-    // Save user information to local storage
-    localStorage.setItem('username', username);
-    localStorage.setItem('logoURL', logoURL);
-
-    // Display updated user information on the page
-    document.getElementById('username').value = username;
-    document.getElementById('logoImage').src = logoURL;
-}
-
-// Event listener for logo input change
-document.getElementById('logoInput').addEventListener('change', function (event) {
-    var fileInput = event.target;
-    var logoImage = document.getElementById('logoImage');
-
-    // Validate file format
-    var allowedFormats = ['jpg', 'jpeg', 'png', 'gif'];
-    var fileName = fileInput.value.toLowerCase();
-    var isValidFormat = allowedFormats.some(format => fileName.endsWith('.' + format));
-
-    if (isValidFormat) {
-        // Read the selected file and set it as the source for the logo image
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            logoImage.src = e.target.result;
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-    } else {
-        alert('Invalid file format. Please choose a file with formats: jpg, jpeg, png, gif.');
-        fileInput.value = ''; // Clear the file input
-    }
-});
-
-document.getElementById("back_btn").addEventListener("click",()=>{
-    window.location.href = "index.html"
-})
-
+        document.getElementById("back_btn").addEventListener("click", () => {
+            window.location.href = "index.html"
         })
     </script>
 
