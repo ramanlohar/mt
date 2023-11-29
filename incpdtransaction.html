@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income and Spend Transaction</title>
+    <title>Add Transaction</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,19 +17,33 @@
             background-color: #3498db;
             color: #fff;
             padding: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
         }
 
+        header h1 {
+            margin: 0;
+        }
+
         section {
-            padding: 15px;
-            text-align: center;
+            padding: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         input, select {
@@ -37,11 +51,11 @@
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 4px;
             box-sizing: border-box;
         }
 
-        #saveBtn {
+        button {
             background-color: #2ecc71;
             color: #fff;
             padding: 10px;
@@ -50,87 +64,92 @@
             cursor: pointer;
         }
 
-        #saveBtn:hover {
+        button:hover {
             background-color: #27ae60;
-        }
-
-        #returnBtn {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #returnBtn:hover {
-            background-color: #2980b9;
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <h1>Income and Spend Transaction</h1>
-    </header>
 
-    <section>
-        <label for="type">Transaction Type:</label>
-        <select id="type" name="type">
-            <option value="income">Income</option>
-            <option value="spend">Spend</option>
+<header>
+    <h1>Income & Expand</h1>
+</header>
+
+<section>
+    <form onsubmit="saveTransaction(event)">
+        <label for="transactionType">Transaction Type:</label>
+        <select id="transactionType" name="transactionType" required>
+            <option value="send">Expand</option>
+            <option value="receive">Income</option>
         </select>
 
         <label for="description">Description:</label>
-        <input type="text" id="description" name="description" placeholder="Enter description">
+        <input type="text" id="description" name="description" required>
 
-        <label for="amount">Amount:</label>
-        <input type="text" id="amount" name="amount" placeholder="Enter amount">
+        <label for="amount">Amount (INR):</label>
+        <input type="number" id="amount" name="amount" required>
 
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date">
+        <label for="transactionDate">Transaction Date:</label>
+        <input type="date" id="transactionDate" name="transactionDate" value="" required>
 
-        <button id="saveBtn" onclick="saveTransaction()">Save</button>
-        <button id="returnBtn" onclick="returnToIncSpend()">Return to Income/Spend</button>
-    </section>
+        <button type="submit">Save</button>
+        <button type="cancel" id="cancelbtn">Cancel</button>
+    </form>
+</section>
 
-    <script>
-        function saveTransaction() {
-            var type = document.getElementById('type').value;
-            var description = document.getElementById('description').value;
-            var amount = document.getElementById('amount').value;
-            var date = document.getElementById('date').value;
+<script>
+    function saveTransaction(event) {
+        event.preventDefault();
 
-            // Validate input
-            if (!type || !description || !amount || !date) {
-                alert('Please fill in all fields.');
-                return;
-            }
+        var transactionType = document.getElementById('transactionType').value;
+        var description = document.getElementById('description').value;
+        var amount = document.getElementById('amount').value;
+        var transactionDate = document.getElementById('transactionDate').value;
 
-            // Create a unique ID for the transaction
-            var transactionId = '_transactionMT' + new Date().getTime();
+        // Generate a unique ID based on current date and time
+        var now = new Date();
+        var uniqueId = formatDate(now);
 
-            // Save the transaction to local storage
-            var transaction = {
-                id: transactionId,
-                type: type,
-                description: description,
-                amount: amount,
-                date: date
-            };
+        // Get existing transactions or initialize an empty array
+        var transactions = JSON.parse(localStorage.getItem('_transactionsMT00000000')) || [];
 
-            localStorage.setItem(transactionId, JSON.stringify(transaction));
+        // Add the new transaction to the array with the unique ID
+        transactions.push({
+            ID: uniqueId,
+            type: transactionType,
+            description: description,
+            amount: amount,
+            date: transactionDate
+        });
 
-            // Return to the Income/Spend page
-            returnToIncSpend();
-        }
+        // Save the updated transactions array to local storage
+        localStorage.setItem('_transactionsMT00000000', JSON.stringify(transactions));
 
-        function returnToIncSpend() {
-            window.location.href = 'incspd.html';
-        }
-    </script>
+        // Redirect back to contactinfo.html
+        window.location.href = 'incspd.html';
+    }
+
+    function formatDate(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        var seconds = String(date.getSeconds()).padStart(2, '0');
+        var milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+        return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
+    }
+
+    const cancelbtn = document.getElementById("cancelbtn");
+
+    cancelbtn.style.backgroundColor = "red";
+cancelbtn.addEventListener("click", () => {
+    window.location.href = "incspd.html";
+});
+
+</script>
 
 </body>
-
 </html>

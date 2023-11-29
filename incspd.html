@@ -4,136 +4,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income and Spend</title>
+    <title>Contact Information</title>
+    <script src="https://kit.fontawesome.com/3df9dd8881.js" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         header {
             background-color: #3498db;
             color: #fff;
-            padding: 15px;
-            text-align: center;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
         }
 
-        section {
-            padding: 15px;
-            text-align: center;
+        header div {
+            text-align: left;
         }
 
-        #incSpdBtn {
+        header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        header h4 {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        button {
             background-color: #2ecc71;
             color: #fff;
             padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 20px;
         }
 
-        #incSpdBtn:hover {
+        button:hover {
             background-color: #27ae60;
         }
 
-        #returnBtn {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #returnBtn:hover {
-            background-color: #2980b9;
-        }
-
-        #transactions {
+        .transaction-list {
             list-style: none;
             padding: 0;
             margin: 0;
             margin-bottom: 50px;
         }
 
-        .transaction-item {
+        .transaction-list-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
             padding: 10px;
+            background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .transaction-item.income {
-            color: green;
+        .transaction-list-item:hover {
+            background-color: #f0f0f0;
         }
 
-        .transaction-item.spend {
-            color: red;
+        #totalamountheader {
+            background-color: #4dd2f0;
+            width: 100%;
+            padding: 10px;
+            position: sticky;
+            top: 65.6px;
+        }
+
+        .date-header {
+            background-color: greenyellow;
+            text-align: center;
+            padding: 5px;
+            margin: auto;
+            margin-bottom: 10px;
+            width: 130px;
+            border-radius: 10px;
+        }
+
+        footer {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            padding: 5px;
+            background-color: #ffffff;
+            position: fixed;
+        }
+
+        #back_btn {
+            background-color: blue;
+            color: white;
+            font-size: 20px;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Income and Spend</h1>
+        <div><button id="back_btn"><i class="fas fa-arrow-left"></i></button></div>
+        <div>
+            <h2 id="personName">Income & Expand</h2>
+            <!-- <h4 id="personphonenumber"></h4> -->
+        </div>
+        <div>
+            <button id="editButton" onclick="enableEdit()">Edit</button>
+            <button id="deleteButton" style="display: none;" onclick="deleteTransactions()">Delete</button>
+            <button id="deselectButton" style="display: none;" onclick="disableEdit()">DS</button>
+        </div>
     </header>
+    <div id="totalamountheader">
+        <p>Total Money Received: <span id="totalReceived"></span> INR</p>
+        <p>Total Money Sent: <span id="totalSent"></span> INR</p>
+        <p>Net Amount: <span id="netAmount"></span> INR</p>
+    </div>
 
     <section>
-        <button id="incSpdBtn" onclick="openIncSpendTransactionPage()">Add Income/Spend</button>
-        <ul id="transactions"></ul>
-        <button id="returnBtn" onclick="returnToIndex()">Return to Index</button>
+        <h2>Transaction History</h2>
+        <ul id="transactionList" class="transaction-list" onclick="toggleCheckbox(event)"></ul>
     </section>
+    <footer>
+        <button onclick="openAddTransactionPage()">+</button>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            loadTransactions();
-        });
 
-        function loadTransactions() {
-            var transactions = getAllTransactions();
-            var transactionsList = document.getElementById('transactions');
+var isEditMode = false;
 
-            transactionsList.innerHTML = ''; // Clear existing list
+document.addEventListener('DOMContentLoaded', function () {
+    // loadPersonName();
+    loadTransactions();
+});
 
-            for (var i = 0; i < transactions.length; i++) {
-                var transaction = transactions[i];
-                var listItem = document.createElement('li');
-                listItem.className = 'transaction-item ' + transaction.type;
-                listItem.textContent = `${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} - ${transaction.description} - ${transaction.amount} INR (${transaction.date})`;
-                transactionsList.appendChild(listItem);
-            }
+function loadPersonName() {
+    var contactId = localStorage.getItem('_transactionMT00000000');
+    var contactInfo = JSON.parse(localStorage.getItem(contactId));
+
+    var personNameElement = document.getElementById('personName');
+    var personnumberElement = document.getElementById('personphonenumber');
+    personNameElement.textContent = contactInfo ? contactInfo.name : 'Unknown';
+
+    var key = contactId;
+    var numericPart = key.replace("MT", "");
+    personnumberElement.innerHTML = numericPart;
+}
+
+function loadTransactions() {
+    var contactId = localStorage.getItem('_transactionMT00000000');
+    var transactionList = document.getElementById('transactionList');
+    var totalReceivedElement = document.getElementById('totalReceived');
+    var totalSentElement = document.getElementById('totalSent');
+    var netAmountElement = document.getElementById('netAmount');
+
+    transactionList.innerHTML = ''; // Clear existing list
+
+    var transactions = JSON.parse(localStorage.getItem('_transactions' + "MT00000000")) || [];
+
+    // Sort transactions by date
+    transactions.sort(function (a, b) {
+        return new Date(a.date) - new Date(b.date);
+    });
+
+    var totalReceived = 0;
+    var totalSent = 0;
+    var currentDate = null;
+
+    for (var i = 0; i < transactions.length; i++) {
+        var transaction = transactions[i];
+
+        // Display date header if it's a new date
+        if (transaction.date !== currentDate) {
+            var dateHeader = document.createElement('li');
+            dateHeader.className = 'date-header';
+            dateHeader.textContent = transaction.date;
+            transactionList.appendChild(dateHeader);
+            currentDate = transaction.date;
         }
 
-        function getAllTransactions() {
-            var transactions = [];
-            for (var i = 0; i < localStorage.length; i++) {
-                var key = localStorage.key(i);
+        var listItem = document.createElement('li');
+        listItem.className = 'transaction-list-item';
+        listItem.textContent = transaction.description + ' - ' + transaction.amount + ' INR';
 
-                if (key.startsWith('_transactionMT')) {
-                    var transaction = JSON.parse(localStorage.getItem(key));
-                    transactions.push(transaction);
-                }
-            }
-            return transactions;
+        // Create checkboxes in edit mode
+        if (isEditMode) {
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = transaction.ID; // Set the ID as the checkbox value
+            listItem.appendChild(checkbox);
         }
 
-        function openIncSpendTransactionPage() {
+        if (transaction.type === 'send') {
+            totalSent += parseFloat(transaction.amount);
+            listItem.style.justifyContent = 'flex-end';
+            listItem.style.color = 'red';
+            listItem.style.backgroundColor = 'white';
+            listItem.style.width = '70%';
+            listItem.style.marginLeft = '30%';
+        } else if (transaction.type === 'receive') {
+            totalReceived += parseFloat(transaction.amount);
+            listItem.style.justifyContent = 'flex-start';
+            listItem.style.color = 'green';
+            listItem.style.backgroundColor = 'white';
+            listItem.style.width = '70%';
+            listItem.style.marginRight = '30%';
+        }
+
+        transactionList.appendChild(listItem);
+    }
+
+    totalReceivedElement.textContent = totalReceived.toFixed(2);
+    totalSentElement.textContent = totalSent.toFixed(2);
+    netAmountElement.textContent = (totalSent - totalReceived).toFixed(2);
+}
+
+        function openAddTransactionPage() {
             window.location.href = 'incpdtransaction.html';
         }
 
-        function returnToIndex() {
-            window.location.href = 'index.html';
-        }
+        document.getElementById("back_btn").addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
     </script>
-
 </body>
 
 </html>

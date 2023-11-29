@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income and Spend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        section {
+            padding: 15px;
+            text-align: center;
+        }
+
+        #incSpdBtn {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #incSpdBtn:hover {
+            background-color: #27ae60;
+        }
+
+        #returnBtn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #returnBtn:hover {
+            background-color: #2980b9;
+        }
+
+        #transactions {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-bottom: 50px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .transaction-item.income {
+            color: green;
+        }
+
+        .transaction-item.spend {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Income and Spend</h1>
+    </header>
+
+    <section>
+        <button id="incSpdBtn" onclick="openIncSpendTransactionPage()">Add Income/Spend</button>
+        <ul id="transactionList" class="transaction-list" onclick="toggleCheckbox(event)"></ul>
+        <button id="returnBtn" onclick="returnToIndex()">Return to Index</button>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadTransactions();
+        });
+
+        function loadTransactions() {
+            var contactId = localStorage.getItem('activeClickedContactId');
+            var transactionList = document.getElementById('transactionList');
+            var totalReceivedElement = document.getElementById('totalReceived');
+            var totalSentElement = document.getElementById('totalSent');
+            var netAmountElement = document.getElementById('netAmount');
+
+            transactionList.innerHTML = ''; // Clear existing list
+
+            var transactions = JSON.parse(localStorage.getItem('_transactions' + contactId)) || [];
+
+            // Sort transactions by date
+            transactions.sort(function (a, b) {
+                return new Date(a.date) - new Date(b.date);
+            });
+
+            var totalReceived = 0;
+            var totalSent = 0;
+            var currentDate = null;
+
+            for (var i = 0; i < transactions.length; i++) {
+                var transaction = transactions[i];
+
+                // Display date header if it's a new date
+                if (transaction.date !== currentDate) {
+                    var dateHeader = document.createElement('li');
+                    dateHeader.className = 'date-header';
+                    dateHeader.textContent = transaction.date;
+                    transactionList.appendChild(dateHeader);
+                    currentDate = transaction.date;
+                }
+
+                var listItem = document.createElement('li');
+                listItem.className = 'transaction-list-item';
+                listItem.textContent = transaction.description + ' - ' + transaction.amount + ' INR';
+
+                // Create checkboxes in edit mode
+                if (isEditMode) {
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = transaction.ID; // Set the ID as the checkbox value
+                    listItem.appendChild(checkbox);
+                }
+
+                if (transaction.type === 'send') {
+                    totalSent += parseFloat(transaction.amount);
+                    listItem.style.justifyContent = 'flex-end';
+                    listItem.style.color = 'red';
+                    listItem.style.backgroundColor = 'white';
+                    listItem.style.width = '70%';
+                    listItem.style.marginLeft = '30%';
+                } else if (transaction.type === 'receive') {
+                    totalReceived += parseFloat(transaction.amount);
+                    listItem.style.justifyContent = 'flex-start';
+                    listItem.style.color = 'green';
+                    listItem.style.backgroundColor = 'white';
+                    listItem.style.width = '70%';
+                    listItem.style.marginRight = '30%';
+                }
+
+                transactionList.appendChild(listItem);
+            }
+
+            totalReceivedElement.textContent = totalReceived.toFixed(2);
+            totalSentElement.textContent = totalSent.toFixed(2);
+            netAmountElement.textContent = (totalSent - totalReceived).toFixed(2);
+        }
+
+
+        function openIncSpendTransactionPage() {
+            window.location.href = 'incpdtransaction.html';
+        }
+
+        function returnToIndex() {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+
+</html>
