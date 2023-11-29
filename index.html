@@ -44,7 +44,7 @@
             padding: 10px 0 0 0;
         }
 
-        ul li{
+        ul li,#spanincspd{
             background-color: rgb(255, 255, 255);
             padding: 15px;
             border-radius: 0px;
@@ -80,7 +80,7 @@
         }
 
         .contact-list-item:hover {
-            text-decoration: underline;
+            /*text-decoration: underline;*/
         }
         footer {
             width: 100%;
@@ -126,9 +126,9 @@
 
 <section>
 
-    <li class="contact-item" onclick="goToIncSpendPage()">
+    <span id="spanincspd" class="contact-item" onclick="goToIncSpendPage()">
                 <strong>My Income & Expend</strong>
-    </li>
+    </span>
     
     <ul id="contactList" class="contact-list"></ul>
     
