@@ -108,59 +108,62 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Load user information from local storage
-            var storedUsername = localStorage.getItem('username');
-            var storedLogoURL = localStorage.getItem('logoURL');
+    // Load user information from local storage
+    var storedUsername = localStorage.getItem('username');
+    var storedLogoURL = localStorage.getItem('logoURL');
 
-            // Display user information on the page
-            document.getElementById('username').value = storedUsername || '';
-            document.getElementById('logoImage').src = storedLogoURL || '';
+    // Display user information on the page
+    document.getElementById('username').value = storedUsername || '';
+    document.getElementById('logoImage').src = storedLogoURL || '';
 
-            // Calculate total received and sent amounts across all contacts
-            var totalReceived = 0;
-            var totalSent = 0;
+    // Calculate total received and sent amounts across all contacts
+    var totalReceived = 0;
+    var totalSent = 0;
 
-            for (var i = 0; i < localStorage.length; i++) {
-                var key = localStorage.key(i);
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
 
-                if (key.startsWith('_transactions')) {
-                    var transactions = JSON.parse(localStorage.getItem(key)) || [];
+        if (key.startsWith('_transactions')) {
+            var transactions = JSON.parse(localStorage.getItem(key)) || [];
 
-                    for (var j = 0; j < transactions.length; j++) {
-                        var transaction = transactions[j];
+            for (var j = 0; j < transactions.length; j++) {
+                var transaction = transactions[j];
 
-                        if (transaction.type === 'send') {
-                            totalSent += parseFloat(transaction.amount);
-                        } else if (transaction.type === 'receive') {
-                            totalReceived += parseFloat(transaction.amount);
-                        }
-                    }
+                if (transaction.type === 'send') {
+                    totalSent += parseFloat(transaction.amount);
+                } else if (transaction.type === 'receive') {
+                    totalReceived += parseFloat(transaction.amount);
                 }
             }
-
-            // Calculate net balance
-            var netBalance = totalReceived - totalSent;
-
-            // Display the values on the page
-            document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
-            document.getElementById('totalSent').textContent = totalSent.toFixed(2);
-            document.getElementById('netAmount').textContent = netBalance.toFixed(2);
-        });
-
-        function saveUserInfo() {
-            // Get user input values
-            var username = document.getElementById('username').value;
-            var logoInput = document.getElementById('logoInput');
-            var logoURL = document.getElementById('logoImage').src;
-
-            // Save user information to local storage
-            localStorage.setItem('username', username);
-            localStorage.setItem('logoURL', logoURL);
-
-            // Display updated user information on the page
-            document.getElementById('username').value = username;
-            document.getElementById('logoImage').src = logoURL;
         }
+    }
+
+    // Calculate net balance, including income and spend
+    var netBalance = (totalReceived - totalSent).toFixed(2);
+
+    // Display the values on the page
+    document.getElementById('totalReceived').textContent = totalReceived.toFixed(2);
+    document.getElementById('totalSent').textContent = totalSent.toFixed(2);
+    document.getElementById('netAmount').textContent = netBalance;
+});
+
+// Other existing functions...
+
+function saveUserInfo() {
+    // Get user input values
+    var username = document.getElementById('username').value;
+    var logoInput = document.getElementById('logoInput');
+    var logoURL = document.getElementById('logoImage').src;
+
+    // Save user information to local storage
+    localStorage.setItem('username', username);
+    localStorage.setItem('logoURL', logoURL);
+
+    // Display updated user information on the page
+    document.getElementById('username').value = username;
+    document.getElementById('logoImage').src = logoURL;
+}
+
 
         // Event listener for logo input change
         document.getElementById('logoInput').addEventListener('change', function (event) {
