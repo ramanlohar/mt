@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income and Spend Transaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        section {
+            padding: 15px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        #saveBtn {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #saveBtn:hover {
+            background-color: #27ae60;
+        }
+
+        #returnBtn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #returnBtn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Income and Spend Transaction</h1>
+    </header>
+
+    <section>
+        <label for="type">Transaction Type:</label>
+        <select id="type" name="type">
+            <option value="income">Income</option>
+            <option value="spend">Spend</option>
+        </select>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" placeholder="Enter description">
+
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount" placeholder="Enter amount">
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date">
+
+        <button id="saveBtn" onclick="saveTransaction()">Save</button>
+        <button id="returnBtn" onclick="returnToIncSpend()">Return to Income/Spend</button>
+    </section>
+
+    <script>
+        function saveTransaction() {
+            var type = document.getElementById('type').value;
+            var description = document.getElementById('description').value;
+            var amount = document.getElementById('amount').value;
+            var date = document.getElementById('date').value;
+
+            // Validate input
+            if (!type || !description || !amount || !date) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            // Create a unique ID for the transaction
+            var transactionId = '_transactionMT' + new Date().getTime();
+
+            // Save the transaction to local storage
+            var transaction = {
+                id: transactionId,
+                type: type,
+                description: description,
+                amount: amount,
+                date: date
+            };
+
+            localStorage.setItem(transactionId, JSON.stringify(transaction));
+
+            // Return to the Income/Spend page
+            returnToIncSpend();
+        }
+
+        function returnToIncSpend() {
+            window.location.href = 'incspd.html';
+        }
+    </script>
+
+</body>
+
+</html>
